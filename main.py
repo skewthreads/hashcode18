@@ -1,4 +1,4 @@
-
+import sys
 current_time = 0
 lines = 0
 columns = 0
@@ -40,23 +40,57 @@ class Vehicle:
 def manhattan(start_x, start_y, end_x, end_y):
     return abs(start_x - end_x) + abs(start_y - end_y)
 
-def score(vehicle, ride):
+def score(input, vehicle, ride):
     score = 0
     distance_to_starting_point = manhattan(vehicle.current_x, vehicle.current_y, ride.start_x, ride.start_y)
     ride_distance = ride.distance
     starting_time = max(current_time + distance_to_starting_point, ride.earliest_start)
     # starting_time = current_time + distance_to_starting_point
     total_time = starting_time + ride_distance
-    if starting_time <= ride.earliest_start:
-        score += per_ride_bonus
-    if total_time < ride.latest_finish:
-        score += ride.distance
-    # waiting_time = max(current_time - ride.earliest_start, 0)
-    waiting_time = max(current_time + distance_to_starting_point - ride.earliest_start, 0)
-    return score - waiting_time # maybe subtract distance_to_starting_point*some_factor
+    if input == 'a':
+        if starting_time <= ride.earliest_start:
+            score += per_ride_bonus
+        if total_time < ride.latest_finish:
+            score += ride.distance
+        # waiting_time = max(current_time - ride.earliest_start, 0)
+        waiting_time = max(current_time + distance_to_starting_point - ride.earliest_start, 0)
+        return score - distance_to_starting_point # maybe subtract distance_to_starting_point*some_factor
+    elif input == 'b':
+        if starting_time <= ride.earliest_start:
+            score += per_ride_bonus
+        if total_time < ride.latest_finish:
+            score += ride.distance
+        # waiting_time = max(current_time - ride.earliest_start, 0)
+        waiting_time = max(current_time + distance_to_starting_point - ride.earliest_start, 0)
+        return score - distance_to_starting_point # maybe subtract distance_to_starting_point*some_factor
+    elif input == 'c':
+        if starting_time <= ride.earliest_start:
+            score += per_ride_bonus
+        if total_time < ride.latest_finish:
+            score += ride.distance
+        # waiting_time = max(current_time - ride.earliest_start, 0)
+        waiting_time = max(current_time + distance_to_starting_point - ride.earliest_start, 0)
+        return score - distance_to_starting_point # maybe subtract distance_to_starting_point*some_factor
+    elif input == 'd':
+        if starting_time <= ride.earliest_start:
+            score += per_ride_bonus
+        if total_time < ride.latest_finish:
+            score += ride.distance
+        # waiting_time = max(current_time - ride.earliest_start, 0)
+        waiting_time = max(current_time + distance_to_starting_point - ride.earliest_start, 0)
+        return score - distance_to_starting_point # maybe subtract distance_to_starting_point*some_factor
+    elif input == 'e':
+        if starting_time <= ride.earliest_start:
+            score += per_ride_bonus
+        if total_time < ride.latest_finish:
+            score += ride.distance
+        # waiting_time = max(current_time - ride.earliest_start, 0)
+        waiting_time = max(current_time + distance_to_starting_point - ride.earliest_start, 0)
+        return score - distance_to_starting_point # maybe subtract distance_to_starting_point*some_factor
 
 
-def main():
+
+def main(input):
     global lines
     global columns
     global total_vehicles
@@ -69,11 +103,7 @@ def main():
     global vehicle_dict
     global free_vehicles
     global all_rides_assigned
-    # with open('./inputs/a_example.in', 'r') as inputFile:
-    # with open('./inputs/b_should_be_easy.in', 'r') as inputFile:
-    # with open('./inputs/c_no_hurry.in', 'r') as inputFile:
-    # with open('./inputs/d_metropolis.in', 'r') as inputFile:
-    with open('./inputs/e_high_bonus.in', 'r') as inputFile:
+    with open('./inputs/'+input+'.in', 'r') as inputFile:
         header = next(inputFile).split()
         lines = int(header[0])
         columns = int(header[1])
@@ -107,7 +137,7 @@ def main():
             for ride in ride_list:
                 if ride.free == False:
                     continue
-                scores.append([ride, score(vehicle, ride)])
+                scores.append([ride, score(input, vehicle, ride)])
             if len(scores) == 0: # No free rides left
                 all_rides_assigned = True
                 break
@@ -122,12 +152,8 @@ def main():
             else:
                 time_dict[ending_time] = [vehicle]
 
-def output():
-    # with open('outputs/a_example.out', 'w') as outputFile:
-    # with open('outputs/b_example.out', 'w') as outputFile:
-    # with open('outputs/c_example.out', 'w') as outputFile:
-    # with open('outputs/d_example.out', 'w') as outputFile:
-    with open('outputs/e_example.out', 'w') as outputFile:
+def output(input):
+    with open('outputs/'+input+'.out', 'w') as outputFile:
         for vehicle in vehicle_list:
             rides = ''
             for ride in vehicle.assigned_rides:
@@ -136,5 +162,5 @@ def output():
 
 
 if __name__ == '__main__':
-    main()
-    output()
+    main(sys.argv[1])
+    output(sys.argv[1])

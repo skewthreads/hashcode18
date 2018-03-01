@@ -51,11 +51,9 @@ def score(vehicle, ride):
         score += per_ride_bonus
     if total_time < ride.latest_finish:
         score += ride.distance
-    return score / total_time # maybe subtract distance_to_starting_point*some_factor
-
-
-
-
+    # waiting_time = max(current_time - ride.earliest_start, 0)
+    waiting_time = max(current_time + distance_to_starting_point - ride.earliest_start, 0)
+    return score - waiting_time # maybe subtract distance_to_starting_point*some_factor
 
 
 def main():
@@ -71,8 +69,11 @@ def main():
     global vehicle_dict
     global free_vehicles
     global all_rides_assigned
-    with open('/home/thanos/repositories/louis/inputs/a_example.in', 'r') as inputFile:
-    # with open('/home/thanos/repositories/louis/inputs/b_should_be_easy.in', 'r') as inputFile:
+    # with open('./inputs/a_example.in', 'r') as inputFile:
+    # with open('./inputs/b_should_be_easy.in', 'r') as inputFile:
+    # with open('./inputs/c_no_hurry.in', 'r') as inputFile:
+    # with open('./inputs/d_metropolis.in', 'r') as inputFile:
+    with open('./inputs/e_high_bonus.in', 'r') as inputFile:
         header = next(inputFile).split()
         lines = int(header[0])
         columns = int(header[1])
@@ -122,8 +123,11 @@ def main():
                 time_dict[ending_time] = [vehicle]
 
 def output():
-    with open('outputs/a_example.out', 'w') as outputFile:
+    # with open('outputs/a_example.out', 'w') as outputFile:
     # with open('outputs/b_example.out', 'w') as outputFile:
+    # with open('outputs/c_example.out', 'w') as outputFile:
+    # with open('outputs/d_example.out', 'w') as outputFile:
+    with open('outputs/e_example.out', 'w') as outputFile:
         for vehicle in vehicle_list:
             rides = ''
             for ride in vehicle.assigned_rides:

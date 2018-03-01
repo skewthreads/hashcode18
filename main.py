@@ -1,5 +1,5 @@
 
-
+current_time = 0
 lines = 0
 columns = 0
 total_vehicles = 0
@@ -7,7 +7,12 @@ total_rides = 0
 per_ride_bonus = 0
 simulation_time = 0
 ride_list = []
+ride_dict = {}
+# free_rides = []
+vehicle_dict = {}
 vehicle_list = []
+free_vehicles = {}
+all_rides_assigned = False
 
 class Ride:
     def __init__(self, id, start_x, start_y, end_x, end_y, earliest_start, latest_finish):
@@ -18,6 +23,8 @@ class Ride:
         self.end_y = end_y
         self.earliest_start = earliest_start
         self.latest_finish = latest_finish
+        self.distance = manhattan(self.start_x, self.start_y, self.end_x , self.end_y)
+        self.free = True
 
 class Vehicle:
     def __init__(self, id):
@@ -25,9 +32,35 @@ class Vehicle:
         self.current_x = 0
         self.current_y = 0
         self.assigned_rides = [] # index of assigned rides
+        self.free = True
+    for current_time in range(simulation_time):
+        for vehicle in vehicle_list:
+            if vehicle.free == False:
+                continue
+            for ride in ride_list:
+                if ride.done == True:
+                    continue
+                score = score(vehicle, ride)
+
 
 def manhattan(start_x, start_y, end_x, end_y):
     return abs(start_x - end_x) + abs(start_y - end_y)
+
+def score(vehicle, ride):
+    score = 0
+    distance_to_starting_point = manhattan(vehicle.current_x, vehicle.current_y, ride.start_x, ride.start_y)
+    ride_distance = ride.distance
+    starting_time = current_time + distance_to_starting_point
+    if starting_time < ride.earliest_start:
+        score += per_ride_bonus
+    if starting_time + ride_distance < ride.latest_finish:
+        score += ride.distance
+    return score # maybe subtract distance_to_starting_point*some_factor
+
+
+
+
+
 
 def main():
     global lines
@@ -37,7 +70,11 @@ def main():
     global per_ride_bonus
     global simulation_time
     global ride_list
+    global ride_dict
     global vehicle_list
+    global vehicle_dict
+    global free_vehicles
+    global all_rides_assigned
     with open('inputs/a_example.in', 'r') as inputFile:
         header = next(inputFile).split()
         lines = int(header[0])
@@ -48,8 +85,33 @@ def main():
         simulation_time = int(header[5])
         for ride in range(total_rides):
             line = next(inputFile).split()
-            ride_list.append(Ride(ride, line[0],line[1],line[2],line[3],line[4],line[5]))
-    vehicle_list = [Vehicle(i) for i in range(total_vehicles)]
+            ride_dict[ride] = Ride(ride, int(line[0]),int(line[1]),int(line[2]),int(line[3]),int(line[4]),int(line[5]))
+            ride_list.append(Ride(ride, int(line[0]),int(line[1]),int(line[2]),int(line[3]),int(line[4]),int(line[5])))
+
+    vehicle_list = [Vehicle(v) for v in range(total_vehicles)]
+    for v in range(total_vehicles):
+        vehicle_dict[v] = Vehicle(v)
+        free_vehicles[v] = True
+
+    for current_time in range(simulation_time):
+        if all_rides_assigned:
+            break
+        for vehicle in vehicle_list:
+            scores = []
+            if vehicle.free == False:
+                continue
+            for ride in ride_list:
+                if ride.free == False:
+                    continue
+                scores.append([ride, score(vehicle, ride)])
+            if len(scores) == 0: # No free rides left
+                all_rides_assigned = True
+                break
+            best_ride = max(scores, key=lambda x: x[1])[0]
+            best_ride.free = False
+            vehicle.assigned_rides.append(best_ride.id)
+            vehicle.free = False
+
 
 if __name__ == '__main__':
     main()
